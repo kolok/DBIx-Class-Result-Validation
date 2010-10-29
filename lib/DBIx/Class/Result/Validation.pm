@@ -177,7 +177,7 @@ L<"DBIx::Class">
 
 =head1 AUTHOR
 
-Nicolas Oudard <noudard@weborama.com>
+Nicolas Oudard <nicolas@oudard.org>
 
 =head1 CONTRIBUTORS
 

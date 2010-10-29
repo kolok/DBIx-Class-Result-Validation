@@ -4,7 +4,7 @@ use ExtUtils::MakeMaker;
 
 WriteMakefile(
     NAME                => 'DBIx::Class::Result::Validation',
-    AUTHOR              => q{Nicolas Oudard <noudard@weborama.com>},
+    AUTHOR              => q{Nicolas Oudard <nicolas@oudard.org>},
     VERSION_FROM        => 'lib/DBIx/Class/Result/Validation.pm',
     LICENSE             => 'perl',
     PL_FILES            => {},
