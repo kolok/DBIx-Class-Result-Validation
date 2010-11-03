@@ -34,14 +34,14 @@ is(ref($object1), 't::app::Main::Result::Object', "create Object with name 'good
 my @objects1 = $schema->resultset('Object')->search({name => "good"});
 is( scalar(@objects1),1,"validation is ok, object was create");
 
-my $object2= $schema->resultset('Object')->create({name => "good"});
-ok( $object2->result_errors, "can not create 2 objects with the same name");
+my $result2 = $schema->resultset('Object')->create({name => "good"});
+is( $result2, 0, "can not create 2 objects with the same name");
 my @objects2 = $schema->resultset('Object')->search({name => "good"});
 is( scalar(@objects2),1,"can not create 2 objects with the same name");
 
 my $object3 = $objects2[0];
 $object3->name('error');
-my $ok = $object3->update();
+my $result3 = $object3->update();
 ok( $object3->result_errors, "can not update object with an error");
 my @objects3 = $schema->resultset('Object')->search({name => "error"});
 is( scalar(@objects3),0,"can not update object with the name 'error'");

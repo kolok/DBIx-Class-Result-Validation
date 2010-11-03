@@ -137,8 +137,8 @@ Insert is done only if validate method return true
 sub insert {
     my $self = shift;
     $self->_erase_result_error();
-    $self->next::method(@_) if ($self->validate);
-    return $self;
+    return $self->next::method(@_) if ($self->validate);
+    return 0;
 }
 
 =head2 update
@@ -154,8 +154,8 @@ sub update {
     my $columns = shift;
     $self->_erase_result_error();
     $self->set_inflated_columns($columns) if $columns;
-    $self->next::method(@_) if ($self->validate);
-    return $self;
+    return $self->next::method(@_) if ($self->validate);
+    return 0;
 }
 
 =head2 _erase_result_error
