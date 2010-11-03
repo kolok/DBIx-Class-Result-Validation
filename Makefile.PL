@@ -9,6 +9,9 @@ WriteMakefile(
     LICENSE             => 'perl',
     PL_FILES            => {},
     PREREQ_PM => {
+        'Carp::Clan' => 0,
+        'Try::Tiny' => 0,
+        'namespace::clean' => 0,
         'Test::More' => 0,
         'DBIx::Class' => 0.08123,
         'Class::Accessor::Grouped' => 0.09008,

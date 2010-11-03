@@ -138,6 +138,7 @@ sub insert {
     my $self = shift;
     $self->_erase_result_error();
     $self->next::method(@_) if ($self->validate);
+    return $self;
 }
 
 =head2 update
@@ -154,6 +155,7 @@ sub update {
     $self->_erase_result_error();
     $self->set_inflated_columns($columns) if $columns;
     $self->next::method(@_) if ($self->validate);
+    return $self;
 }
 
 =head2 _erase_result_error
