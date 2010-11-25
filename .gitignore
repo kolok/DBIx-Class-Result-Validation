@@ -1,3 +1,4 @@
+t/app/db/example.db
 Makefile
 Makefile.old
 /blib
