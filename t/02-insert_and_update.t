@@ -22,12 +22,9 @@ my $schema = t::app::Main->connect('dbi:SQLite:t/app/db/example.db');
 # for other DSNs, e.g. MySQL, see the perldoc for the relevant dbd
 # driver, e.g perldoc L<DBD::mysql>.
 
-
 # object t::app::Main::Result::Object have validate options
 # libelle must be unique
 # libelle can not be 'error'
-
-use Data::Dumper 'Dumper';
 
 my $object1 = $schema->resultset('Object')->create({name => "good"});
 is(ref($object1), 't::app::Main::Result::Object', "create Object with name 'good' is Ok");
