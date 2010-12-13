@@ -26,12 +26,12 @@ my $schema = t::app::Main->connect('dbi:SQLite:t/app/db/example.db');
 # libelle must be unique
 # libelle can not be 'error'
 
-my $object1 = $schema->resultset('Object')->create({name => "good"});
-is(ref($object1), 't::app::Main::Result::Object', "create Object with name 'good' is Ok");
+my ($obj1, $result1) = $schema->resultset('Object')->create({name => "good"});
+is($result1, 1, "create Object with name 'good' is Ok");
 my @objects1 = $schema->resultset('Object')->search({name => "good"});
 is( scalar(@objects1),1,"validation is ok, object was create");
 
-my $result2 = $schema->resultset('Object')->create({name => "good"});
+my ($obj2,$result2) = $schema->resultset('Object')->create({name => "good"});
 is( $result2, 0, "can not create 2 objects with the same name");
 my @objects2 = $schema->resultset('Object')->search({name => "good"});
 is( scalar(@objects2),1,"can not create 2 objects with the same name");

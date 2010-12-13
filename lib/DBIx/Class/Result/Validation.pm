@@ -14,7 +14,7 @@ Version 0.01
 =cut
 
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 =head1 SYNOPSIS
 
@@ -147,8 +147,8 @@ Insert is done only if validate method return true
 
 sub insert {
     my $self = shift;
-    return $self->next::method(@_) if ($self->validate);
-    return 0;
+    return ($self->next::method(@_),1) if ($self->validate);
+    return ($self, 0);
 }
 
 =head2 update
