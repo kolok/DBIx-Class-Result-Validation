@@ -5,7 +5,7 @@ __PACKAGE__->add_columns(qw/ objectid name /);
 __PACKAGE__->set_primary_key('objectid');
 __PACKAGE__->load_components(qw/ Result::Validation /);
 
-sub validate
+sub _validate
 {
   my $self = shift;
   my @other = $self->result_source->resultset->search({name => $self->name, objectid => { "!=", $self->objectid} });

@@ -14,7 +14,7 @@ Version 0.01
 =cut
 
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 =head1 SYNOPSIS
 
@@ -29,9 +29,9 @@ In your result class load_component :
 
     __PACKAGE__->load_component(qw/ ... Result::Validation /);
 
-defined your validate function which call at least super-valdate function
+defined your _validate function which will be called by validate function
 
-    sub validate
+    sub _validate
     {
       my $self = shift;
       #validate if this object exist whith the same label
@@ -42,7 +42,6 @@ defined your validate function which call at least super-valdate function
         $self->add_result_error('label', 'label must be unique');
       }
 
-      return $self->next::method(@_);
     }
 
 When you try to create or update an object Package::Schema::Result::MyClass, if an other one with the same label exist, this one will be not created, validate return 0 and $self->result_errors will be set.
@@ -97,12 +96,24 @@ You can redefined it in your Result object and call back it with  :
 
 =cut
 
-
 sub validate {
-    my $self = shift;
-    return 0 if (defined $self->result_errors());
-    return 1;
+  my $self = shift;
+  $self->_erase_result_error();
+  $self->_validate();
+  return 0 if (defined $self->result_errors());
+  return 1;
 };
+
+=head2 _validate
+
+_validate function is the function to redefine with validation behaviour object
+
+=cut
+
+sub _validate
+{
+  return 1;
+}
 
 =head2 add_result_error
 
@@ -136,7 +147,6 @@ Insert is done only if validate method return true
 
 sub insert {
     my $self = shift;
-    $self->_erase_result_error();
     return $self->next::method(@_) if ($self->validate);
     return 0;
 }
@@ -152,7 +162,6 @@ Update is done only if validate method return true
 sub update {
     my $self = shift;
     my $columns = shift;
-    $self->_erase_result_error();
     $self->set_inflated_columns($columns) if $columns;
     return $self->next::method(@_) if ($self->validate);
     return 0;
