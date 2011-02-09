@@ -1,5 +1,8 @@
 Revision history for DBIx-Class-Weborama-Validation
 
-0.01    Date/time
-        First version, released on an unsuspecting world.
+0.04    2011-02-09, Nicolas Oudard
+        delete dependencies of sqlite3
+
+0.01    2010-12-01
+        First version
 
