@@ -1,8 +1,0 @@
-
-DROP TABLE IF EXISTS object;
-
-CREATE TABLE object (
-  objectid INTEGER PRIMARY KEY,
-  name TEXT NOT NULL
-);
-
