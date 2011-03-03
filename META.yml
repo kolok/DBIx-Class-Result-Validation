@@ -1,0 +1,26 @@
+---
+abstract: 'DBIx Class Result Validation'
+author:
+  - 'Nicolas Oudard'
+build_requires:
+  Test::More: 0
+configure_requires:
+  Module::Build: 0.36
+generated_by: 'Module::Build version 0.3603'
+license: perl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: DBIx-Class-Result-Validation
+provides:
+  DBIx::Class::Result::Validation:
+    file: lib/DBIx/Class/Result/Validation.pm
+    version: 0.04
+requires:
+  Class::Accessor::Grouped: 0.09008
+  DBIx::Class: 0.08127
+  SQL::Translator: 0.11007
+  Test::More: 0
+resources:
+  license: http://dev.perl.org/licenses/
+version: 0.04
