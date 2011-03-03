@@ -1,5 +1,9 @@
 Revision history for DBIx-Class-Weborama-Validation
 
+0.05    2011-03-03, Nicolas Oudard
+        Makefile to Build
+        Update dependencies
+
 0.04    2011-02-09, Nicolas Oudard
         delete dependencies of sqlite3
 
