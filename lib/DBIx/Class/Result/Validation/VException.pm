@@ -8,13 +8,7 @@ use Moose;
 
 DBIx::Class::Result::Validation::VException - Exception for Validation
 
-=head1 VERSION
-
-Version 0.05
-
 =cut
-
-our $VERSION = '0.05';
 
 =head1 SYNOPSIS
 
