@@ -11,6 +11,9 @@ my $build = Module::Build->new (
             'SQL::Translator' => 0.11007,
             'Class::Accessor::Grouped' => 0.09008,
             'Test::More' => 0,
+            'Carp' => 0,
+            'Try::Tiny' => 0,
+            'Moose' => 0,
         },
         build_requires => {
             'Test::More' => 0,

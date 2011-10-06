@@ -3,6 +3,10 @@ package DBIx::Class::Result::Validation;
 use strict;
 use warnings;
 
+use Carp;
+use Try::Tiny;
+use DBIx::Class::Result::Validation::VException;
+
 =head1 NAME
 
 DBIx::Class::Result::Validation - DBIx::Class component to manage validation on result object
@@ -100,7 +104,19 @@ sub validate {
   my $self = shift;
   $self->_erase_result_error();
   $self->_validate();
-  return 0 if (defined $self->result_errors());
+  use Data::Dumper 'Dumper';
+  print Dumper $self->result_errors;
+  return 0 if (defined $self->result_errors);
+  return 1;
+};
+
+=head2 error_reporting
+
+function to configure on object to find what is wrong after a Database throw
+
+=cut
+
+sub error_reporting {
   return 1;
 };
 
@@ -147,8 +163,23 @@ Insert is done only if validate method return true
 
 sub insert {
     my $self = shift;
-    return ($self->next::method(@_),1) if ($self->validate);
-    return ($self, 0);
+    my $result;
+    eval {
+        if ($self->validate)
+        {
+            $result = $self->next::method(@_);
+        }
+        else
+        {
+            croak( "Validation failed !!!" );
+        }
+    };
+    if ($@)
+    {
+        $self->error_reporting();
+        croak( DBIx::Class::Result::Validation::VException->new(object => $self, message => "$@") );
+    }
+    return $result;
 }
 
 =head2 update
@@ -162,9 +193,25 @@ Update is done only if validate method return true
 sub update {
     my $self = shift;
     my $columns = shift;
+    my $result;
     $self->set_inflated_columns($columns) if $columns;
-    return $self->next::method(@_) if ($self->validate);
-    return 0;
+    eval
+    {
+        if ($self->validate)
+        {
+            $result = $self->next::method(@_);
+        }
+        else
+        {
+            croak( "Validation failed !!!" );
+        }
+    };
+    if ($@)
+    {
+        $self->error_reporting();
+        croak( DBIx::Class::Result::Validation::VException->new(object => $self, message => "$@"));
+    }
+    return $result;
 }
 
 =head2 _erase_result_error
