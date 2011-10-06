@@ -5,8 +5,9 @@ author:
 build_requires:
   Test::More: 0
 configure_requires:
-  Module::Build: 0.36
-generated_by: 'Module::Build version 0.3603'
+  Module::Build: 0.38
+dynamic_config: 1
+generated_by: 'Module::Build version 0.38, CPAN::Meta::Converter version 2.110580'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -15,12 +16,15 @@ name: DBIx-Class-Result-Validation
 provides:
   DBIx::Class::Result::Validation:
     file: lib/DBIx/Class/Result/Validation.pm
-    version: 0.05
+    version: 0.06
 requires:
+  Carp: 0
   Class::Accessor::Grouped: 0.09008
   DBIx::Class: 0.08127
+  Moose: 0
   SQL::Translator: 0.11007
   Test::More: 0
+  Try::Tiny: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.05
+version: 0.06

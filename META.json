@@ -1,0 +1,52 @@
+{
+   "abstract" : "DBIx Class Result Validation",
+   "author" : [
+      "Nicolas Oudard"
+   ],
+   "dynamic_config" : 1,
+   "generated_by" : "Module::Build version 0.38, CPAN::Meta::Converter version 2.110580",
+   "license" : [
+      "perl_5"
+   ],
+   "meta-spec" : {
+      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+      "version" : "2"
+   },
+   "name" : "DBIx-Class-Result-Validation",
+   "prereqs" : {
+      "build" : {
+         "requires" : {
+            "Test::More" : 0
+         }
+      },
+      "configure" : {
+         "requires" : {
+            "Module::Build" : "0.38"
+         }
+      },
+      "runtime" : {
+         "requires" : {
+            "Carp" : 0,
+            "Class::Accessor::Grouped" : "0.09008",
+            "DBIx::Class" : "0.08127",
+            "Moose" : 0,
+            "SQL::Translator" : "0.11007",
+            "Test::More" : 0,
+            "Try::Tiny" : 0
+         }
+      }
+   },
+   "provides" : {
+      "DBIx::Class::Result::Validation" : {
+         "file" : "lib/DBIx/Class/Result/Validation.pm",
+         "version" : "0.06"
+      }
+   },
+   "release_status" : "stable",
+   "resources" : {
+      "license" : [
+         "http://dev.perl.org/licenses/"
+      ]
+   },
+   "version" : "0.06"
+}
