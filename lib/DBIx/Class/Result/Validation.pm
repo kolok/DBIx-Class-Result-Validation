@@ -104,8 +104,6 @@ sub validate {
   my $self = shift;
   $self->_erase_result_error();
   $self->_validate();
-  use Data::Dumper 'Dumper';
-  print Dumper $self->result_errors;
   return 0 if (defined $self->result_errors);
   return 1;
 };
