@@ -13,12 +13,12 @@ DBIx::Class::Result::Validation - DBIx::Class component to manage validation on 
 
 =head1 VERSION
 
-Version 0.06
+Version 0.09
 
 =cut
 
 
-our $VERSION = '0.06';
+our $VERSION = '0.09';
 
 =head1 SYNOPSIS
 
@@ -175,6 +175,7 @@ sub insert {
     if ($@)
     {
         $self->error_reporting();
+        croak $@ if $@->isa('DBIx::Class::Result::Validation::VException');
         croak( DBIx::Class::Result::Validation::VException->new(object => $self, message => "$@") );
     }
     return $result;

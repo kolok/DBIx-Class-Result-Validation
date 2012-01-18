@@ -21,7 +21,7 @@
       },
       "configure" : {
          "requires" : {
-            "Module::Build" : "0.36"
+            "Module::Build" : "0.38"
          }
       },
       "runtime" : {
@@ -39,7 +39,11 @@
    "provides" : {
       "DBIx::Class::Result::Validation" : {
          "file" : "lib/DBIx/Class/Result/Validation.pm",
-         "version" : "0.05"
+         "version" : "0.08"
+      },
+      "DBIx::Class::Result::Validation::VException" : {
+         "file" : "lib/DBIx/Class/Result/Validation/VException.pm",
+         "version" : 0
       }
    },
    "release_status" : "stable",
@@ -48,5 +52,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.05"
+   "version" : "0.08"
 }
