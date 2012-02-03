@@ -1,5 +1,10 @@
 Revision history for DBIx-Class-Weborama-Validation
 
+0.10    2012-02-03
+        A string overloading to the VException
+        Wrap some long POD lines
+        Add github repo to meta information
+
 0.05    2011-03-03, Nicolas Oudard
         Makefile to Build
         Update dependencies

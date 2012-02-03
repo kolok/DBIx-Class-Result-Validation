@@ -4,7 +4,7 @@
       "Nicolas Oudard"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Module::Build version 0.38, CPAN::Meta::Converter version 2.110580",
+   "generated_by" : "Module::Build version 0.38, CPAN::Meta::Converter version 2.112621",
    "license" : [
       "perl_5"
    ],
@@ -39,7 +39,7 @@
    "provides" : {
       "DBIx::Class::Result::Validation" : {
          "file" : "lib/DBIx/Class/Result/Validation.pm",
-         "version" : "0.08"
+         "version" : "0.09"
       },
       "DBIx::Class::Result::Validation::VException" : {
          "file" : "lib/DBIx/Class/Result/Validation/VException.pm",
@@ -52,5 +52,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.08"
+   "version" : "0.09"
 }
