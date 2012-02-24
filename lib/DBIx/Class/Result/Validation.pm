@@ -14,11 +14,11 @@ DBIx::Class::Result::Validation - DBIx::Class component to manage validation on 
 
 =head1 VERSION
 
-Version 0.10
+Version 0.11
 
 =cut
 
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 
 =head1 SYNOPSIS
 
@@ -165,27 +165,8 @@ Insert is done only if validate method return true
 
 sub insert {
     my $self = shift;
-    my $result;
     my $insert = $self->next::can;
-    try {
-        if ($self->validate)
-        {
-            $result = $self->$insert(@_);
-        }
-        else
-        {
-            my $errors = $self->_get_errors();
-            croak( "Validation failed !!!\n$errors" );
-        }
-    }
-    catch
-    {
-        my $error = $_;
-        $self->error_reporting();
-        croak $error if $error->isa('DBIx::Class::Result::Validation::VException');
-        croak( DBIx::Class::Result::Validation::VException->new(object => $self, message => "$error" ) );
-    };
-    return $result;
+    return $self->_try_next_method($self->next::can, @_);
 }
 
 =head2 update
@@ -198,27 +179,38 @@ Update is done only if validate method return true
 
 sub update {
     my $self = shift;
-    my $columns = shift;
+    if ( my $columns = shift ) {
+        $self->set_inflated_columns($columns);
+    }
+    return $self->_try_next_method( $self->next::can, @_ );
+}
+
+sub _try_next_method {
+    my $self        = shift;
+    my $next_method = shift;
+
+    my $class = ref $self;
     my $result;
-    $self->set_inflated_columns($columns) if $columns;
-    my $update = $self->next::can;
-    try
-    {
-        if ($self->validate)
-        {
-            $result = $self->$update(@_);
+    try {
+        if ( $self->validate ) {
+            $result = $self->$next_method(@_);
         }
-        else
-        {
+        else {
             my $errors = $self->_get_errors;
-            croak( "Validation failed !!!\n$errors" );
+            croak("$class: Validation failed.\n$errors");
         }
     }
-    catch
-    {
+    catch {
         my $error = $_;
         $self->error_reporting();
-        croak( DBIx::Class::Result::Validation::VException->new(object => $self, message => "$error"));
+        croak $error
+          if $error->isa('DBIx::Class::Result::Validation::VException');
+        croak(
+            DBIx::Class::Result::Validation::VException->new(
+                object  => $self,
+                message => "$error"
+            )
+        );
     };
     return $result;
 }
@@ -227,6 +219,7 @@ sub _get_errors {
     my $self = shift;
 
     require Data::Dumper;
+    no warnings 'once';
     local $Data::Dumper::Indent   = 1;
     local $Data::Dumper::Sortkeys = 1;
     local $Data::Dumper::Terse    = 1;
