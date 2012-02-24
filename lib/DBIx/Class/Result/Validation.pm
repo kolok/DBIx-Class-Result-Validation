@@ -5,6 +5,7 @@ use warnings;
 
 use Carp;
 use Try::Tiny;
+use Scalar::Util 'blessed';
 use DBIx::Class::Result::Validation::VException;
 
 =head1 NAME
@@ -13,16 +14,17 @@ DBIx::Class::Result::Validation - DBIx::Class component to manage validation on 
 
 =head1 VERSION
 
-Version 0.09
+Version 0.11
 
 =cut
 
-
-our $VERSION = '0.09';
+our $VERSION = '0.11';
 
 =head1 SYNOPSIS
 
-DBIx::Class::Result::Validation component call validate function before insert or update object and unauthorized these actions if validation set result_errors accessor.
+DBIx::Class::Result::Validation component call validate function before insert
+or update object and unauthorized these actions if validation set
+result_errors accessor.
 
 In your result class load_component :
 
@@ -48,7 +50,9 @@ defined your _validate function which will be called by validate function
 
     }
 
-When you try to create or update an object Package::Schema::Result::MyClass, if an other one with the same label exist, this one will be not created, validate return 0 and $self->result_errors will be set.
+When you try to create or update an object Package::Schema::Result::MyClass,
+if an other one with the same label exist, this one will be not created,
+validate return 0 and $self->result_errors will be set.
 
 $self->result_errors return :
 
@@ -161,29 +165,13 @@ Insert is done only if validate method return true
 
 sub insert {
     my $self = shift;
-    my $result;
-    eval {
-        if ($self->validate)
-        {
-            $result = $self->next::method(@_);
-        }
-        else
-        {
-            croak( "Validation failed !!!" );
-        }
-    };
-    if ($@)
-    {
-        $self->error_reporting();
-        croak $@ if $@->isa('DBIx::Class::Result::Validation::VException');
-        croak( DBIx::Class::Result::Validation::VException->new(object => $self, message => "$@") );
-    }
-    return $result;
+    my $insert = $self->next::can;
+    return $self->_try_next_method($self->next::can, @_);
 }
 
 =head2 update
 
-call before DBIx::Calss::Base update
+Call before DBIx::Class::Base update
 
 Update is done only if validate method return true
 
@@ -191,26 +179,51 @@ Update is done only if validate method return true
 
 sub update {
     my $self = shift;
-    my $columns = shift;
-    my $result;
-    $self->set_inflated_columns($columns) if $columns;
-    eval
-    {
-        if ($self->validate)
-        {
-            $result = $self->next::method(@_);
-        }
-        else
-        {
-            croak( "Validation failed !!!" );
-        }
-    };
-    if ($@)
-    {
-        $self->error_reporting();
-        croak( DBIx::Class::Result::Validation::VException->new(object => $self, message => "$@"));
+    if ( my $columns = shift ) {
+        $self->set_inflated_columns($columns);
     }
+    return $self->_try_next_method( $self->next::can, @_ );
+}
+
+sub _try_next_method {
+    my $self        = shift;
+    my $next_method = shift;
+
+    my $class = ref $self;
+    my $result;
+    try {
+        if ( $self->validate ) {
+            $result = $self->$next_method(@_);
+        }
+        else {
+            my $errors = $self->_get_errors;
+            croak("$class: Validation failed.\n$errors");
+        }
+    }
+    catch {
+        my $error = $_;
+        $self->error_reporting();
+        croak $error
+          if $error->isa('DBIx::Class::Result::Validation::VException');
+        croak(
+            DBIx::Class::Result::Validation::VException->new(
+                object  => $self,
+                message => "$error"
+            )
+        );
+    };
     return $result;
+}
+
+sub _get_errors {
+    my $self = shift;
+
+    require Data::Dumper;
+    no warnings 'once';
+    local $Data::Dumper::Indent   = 1;
+    local $Data::Dumper::Sortkeys = 1;
+    local $Data::Dumper::Terse    = 1;
+    return Data::Dumper::Dumper( $self->{result_errors} );
 }
 
 =head2 _erase_result_error
