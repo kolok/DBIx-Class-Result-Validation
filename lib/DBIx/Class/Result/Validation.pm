@@ -175,7 +175,7 @@ sub insert {
     if ($@)
     {
         $self->error_reporting();
-        croak $@ if $@->isa('DBIx::Class::Result::Validation::VException');
+        croak $@ if ref $@ eq 'DBIx::Class::Result::Validation::VException';
         croak( DBIx::Class::Result::Validation::VException->new(object => $self, message => "$@") );
     }
     return $result;
