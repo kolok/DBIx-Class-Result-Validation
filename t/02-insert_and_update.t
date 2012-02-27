@@ -6,9 +6,8 @@ use Test::More;
 use t::app::Main;
 use t::lib::Utils;
 use Try::Tiny;
-use Data::Dumper 'Dumper';
 
-plan tests => 15;
+plan tests => 17;
 
 my $schema = t::app::Main->connect('dbi:SQLite:t/example.db');
 $schema->deploy({ add_drop_table => 1 });
@@ -34,8 +33,9 @@ is( scalar(@objects2),1,"can not create 2 objects with the same name");
 isa_ok( $error, "DBIx::Class::Result::Validation::VException", "error returned is a DBIx::Class::Result::Validation::VException");
 isa_ok( $error->object, "t::app::Main::Result::Object", "error returned object t::app::Main::Result::Object");
 ok( $error->object->result_errors, "error returned object with result_error");
-ok( $error->message =~ m/Validation failed !!!/, "error returned message Validation Failed");
-
+like( $error->message, qr/Validation failed\./, "error returned message Validation Failed");
+like( "$error", qr/Validation failed\./, "error object should stringify correctly");
+like( "$error", qr/name must be unique/, "... and we should get actual errors listed");
 
 my $object3 = $objects2[0];
 $object3->name('error');
@@ -51,7 +51,7 @@ catch
 isa_ok( $error3, "DBIx::Class::Result::Validation::VException", "error returned is a DBIx::Class::Result::Validation::VException");
 isa_ok( $error3->object, "t::app::Main::Result::Object", "error returned object t::app::Main::Result::Object");
 ok( $error3->object->result_errors, "error returned object with result_error");
-ok( $error3->message =~ m/Validation failed !!!/, "error returned message Validation Failed");
+like( $error3->message, qr/Validation failed\./, "error returned message Validation Failed");
 ok( $object3->result_errors, "can not update object with an error");
 my @objects3 = $schema->resultset('Object')->search({name => "error"});
 is( scalar(@objects3),0,"can not update object with the name 'error'");
