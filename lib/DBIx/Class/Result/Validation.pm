@@ -14,11 +14,11 @@ DBIx::Class::Result::Validation - DBIx::Class component to manage validation on 
 
 =head1 VERSION
 
-Version 0.11
+Version 0.12
 
 =cut
 
-our $VERSION = '0.11';
+our $VERSION = '0.12';
 
 =head1 SYNOPSIS
 
@@ -146,10 +146,10 @@ sub add_result_error
   my ($self, $key, $value) = @_;
   if (defined $self->result_errors)
   {
-    if (defined $self->{result_errors}->{$key})
-    { push(@{$self->{result_errors}->{$key}}, $value); }
+    if (defined $self->result_errors->{$key})
+    { push(@{$self->result_errors->{$key}}, $value); }
     else
-    { $self->{result_errors}->{$key} = [$value]; }
+    { $self->result_errors->{$key} = [$value]; }
   }
   else
   { $self->result_errors({$key => [$value]}); }
@@ -203,6 +203,7 @@ sub _try_next_method {
     catch {
         my $error = $_;
         $self->error_reporting();
+        $self->add_result_error(uncaught => $error) if !defined $self->result_errors;
         croak $error
           if ref $error eq 'DBIx::Class::Result::Validation::VException';
         croak(
