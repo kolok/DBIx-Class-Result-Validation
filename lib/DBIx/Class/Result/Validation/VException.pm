@@ -4,7 +4,6 @@ use strict;
 use warnings;
 use Moose;
 use overload '""' => sub {
-    require Carp;
     shift->message;
   },
   fallback => 1;
