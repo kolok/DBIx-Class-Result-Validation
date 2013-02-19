@@ -5,7 +5,7 @@ use warnings;
 use Moose;
 use overload '""' => sub {
     require Carp;
-    Carp::longmess( shift->message );
+    shift->message;
   },
   fallback => 1;
 
