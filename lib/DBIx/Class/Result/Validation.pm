@@ -7,6 +7,7 @@ use Carp;
 use Try::Tiny;
 use Scalar::Util 'blessed';
 use DBIx::Class::Result::Validation::VException;
+use Data::Dumper;
 
 =head1 NAME
 
@@ -107,17 +108,22 @@ You can redefined it in your Result object and call back it with  :
 sub validate {
   my $self = shift;
   $self->_erase_result_error();
-
-  my $class = ref $self;
-# TODO: can we use : print $self->result_source;
-  my @columns = $class->columns;
-
+  my @columns = $self->result_source->columns;
   foreach my $field (@columns)
   {
-      if ($class->column_info($field)->{'validation'})
+      if ($self->result_source->column_info($field)->{'validation'})
       {
-          my $validation_function = "validate_" . $class->column_info($field)->{'validation'};
-          $self->$validation_function($field);
+          if ( ref($self->result_source->column_info($field)->{'validation'}) eq 'ARRAY' && scalar(@{$self->result_source->column_info($field)->{'validation'}}) >0 ){
+              foreach my $validation (@{$self->result_source->column_info($field)->{'validation'}}){
+                  my $validation_function = "validate_" . $validation;
+                  $self->$validation_function($field);
+              }
+          }
+          else
+          {
+              my $validation_function = "validate_" . $self->result_source->column_info($field)->{'validation'};
+              $self->$validation_function($field);
+          }
       }
   }
 
@@ -269,11 +275,12 @@ validation of the enum field, should return a validation error if the field is s
 
 sub validate_enum {
     my ($self, $field) = @_;
-
-    $self->add_result_error( $field, $field ." must set with one of the following value: " . $self->result_source->columns_info->{$field}->{extra}->{list} )
-    unless( not defined $self->$field
-            or
-        $self->$field ~~ @{ $self->result_source->columns_info->{$field}->{extra}->{list} }
+    $self->add_result_error( $field, $field ." must be set with one of the following value: " . Dumper($self->result_source->columns_info->{$field}->{extra}->{list}) )
+    if( 
+            (!defined ($self->$field) && !defined($self->result_source->columns_info->{$field}->{default_value})
+            or  
+            (defined ($self->$field) && !($self->$field ~~ @{ $self->result_source->columns_info->{$field}->{extra}->{list} }))
+      )
     );
 }
 

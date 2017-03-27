@@ -4,7 +4,12 @@ __PACKAGE__->table('object');
 __PACKAGE__->add_columns('objectid',
                          { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
                          'name',
-                         {data_type => 'varchar', is_nullable => 0});
+                         {data_type => 'varchar', is_nullable => 0},
+                         'my_enum', 
+                         {data_type => "enum", extra => { list => [ "val1", "val2", "val3"] }, is_nullable => 1 , default_value => "val1" , validation  => "enum"},
+                         'my_enum_def', 
+                         {data_type => "enum", extra => { list => [ "val1", "val2", "val3"] }, is_nullable => 0 , validation  => ["enum","defined"]},
+                         );
 __PACKAGE__->set_primary_key('objectid');
 __PACKAGE__->load_components(qw/ Result::Validation /);
 

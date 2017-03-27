@@ -13,9 +13,9 @@ sub populate_database
   my $schema = shift;
 
 
-  my @artists = (['object 1'], ['object 2']);
+  my @artists = (['object 1','val1','val1'], ['object 2','val2','val2']);
   $schema->populate('Object', [
-    [qw/name/],
+    [qw/name my_enum my_enum_def/],
     @artists,
     ]);
 }
