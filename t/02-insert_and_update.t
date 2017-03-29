@@ -14,7 +14,7 @@ $schema->deploy({ add_drop_table => 1 });
 populate_database($schema);
 
 my $obj1;
-$obj1 = $schema->resultset('Object')->create({name => "good"});
+$obj1 = $schema->resultset('Object')->create({name => "good", my_enum=>"val1", my_enum_def =>"val1"});
 ok($obj1->id, "create Object with name 'good' is Ok");
 my @objects1 = $schema->resultset('Object')->search({name => "good"});
 is( scalar(@objects1),1,"validation is ok, object was create");
@@ -22,7 +22,7 @@ is( scalar(@objects1),1,"validation is ok, object was create");
 my $error;
 my $obj2;
 try {
-    $obj2 = $schema->resultset('Object')->create({name => "good"});
+    $obj2 = $schema->resultset('Object')->create({name => "good", my_enum=>"val1", my_enum_def =>"val1"});
 }
 catch {
     $error = $_;

@@ -4,7 +4,7 @@
       "Nicolas Oudard"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Module::Build version 0.4003, CPAN::Meta::Converter version 2.120921",
+   "generated_by" : "Module::Build version 0.4214",
    "license" : [
       "perl_5"
    ],
@@ -17,11 +17,6 @@
       "build" : {
          "requires" : {
             "Test::More" : "0"
-         }
-      },
-      "configure" : {
-         "requires" : {
-            "Module::Build" : "0.40"
          }
       },
       "runtime" : {
@@ -39,7 +34,7 @@
    "provides" : {
       "DBIx::Class::Result::Validation" : {
          "file" : "lib/DBIx/Class/Result/Validation.pm",
-         "version" : "0.12"
+         "version" : "0.13"
       },
       "DBIx::Class::Result::Validation::VException" : {
          "file" : "lib/DBIx/Class/Result/Validation/VException.pm",
@@ -55,5 +50,6 @@
          "url" : "https://github.com/kolok/DBIx-Class-Result-Validation"
       }
    },
-   "version" : "0.12"
+   "version" : "0.13",
+   "x_serialization_backend" : "JSON::PP version 2.27203"
 }

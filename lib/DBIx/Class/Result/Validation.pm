@@ -7,6 +7,7 @@ use Carp;
 use Try::Tiny;
 use Scalar::Util 'blessed';
 use DBIx::Class::Result::Validation::VException;
+use Data::Dumper;
 
 =head1 NAME
 
@@ -107,6 +108,25 @@ You can redefined it in your Result object and call back it with  :
 sub validate {
   my $self = shift;
   $self->_erase_result_error();
+  my @columns = $self->result_source->columns;
+  foreach my $field (@columns)
+  {
+      if ($self->result_source->column_info($field)->{'validation'})
+      {
+          if ( ref($self->result_source->column_info($field)->{'validation'}) eq 'ARRAY' && scalar(@{$self->result_source->column_info($field)->{'validation'}}) >0 ){
+              foreach my $validation (@{$self->result_source->column_info($field)->{'validation'}}){
+                  my $validation_function = "validate_" . $validation;
+                  $self->$validation_function($field);
+              }
+          }
+          else
+          {
+              my $validation_function = "validate_" . $self->result_source->column_info($field)->{'validation'};
+              $self->$validation_function($field);
+          }
+      }
+  }
+
   $self->_validate();
   return 0 if (defined $self->result_errors);
   return 1;
@@ -165,6 +185,7 @@ Insert is done only if validate method return true
 
 sub insert {
     my $self = shift;
+
     my $insert = $self->next::can;
     return $self->_try_next_method($self->next::can, @_);
 }
@@ -237,6 +258,56 @@ sub _erase_result_error
 {
     my $self = shift;
     $self->result_errors(undef);
+}
+
+
+=head1 VALIDATION METHOD
+
+set of function to validate fields
+
+=cut
+
+=head2 validate_enum function
+
+validation of the enum field, should return a validation error if the field is set and is not in the list of enum
+
+=cut
+
+sub validate_enum {
+    my ($self, $field) = @_;
+    $self->add_result_error( $field, $field ." must be set with one of the following value: " . Dumper($self->result_source->columns_info->{$field}->{extra}->{list}) )
+    if( 
+            (!defined ($self->$field) && !defined($self->result_source->columns_info->{$field}->{default_value})
+            or  
+            (defined ($self->$field) && !($self->$field ~~ @{ $self->result_source->columns_info->{$field}->{extra}->{list} }))
+      )
+    );
+}
+
+=head2 validate_defined
+
+validation of field which must be defined, return error if the field is not defined
+
+=cut
+
+sub validate_defined {
+    my ($self, $field) = @_;
+
+    $self->add_result_error( $field, "must be set" )
+      unless defined $self->$field;
+}
+
+=head2 validate_not_empty
+
+validation of a field which can be null but can't be empty
+
+=cut
+
+sub validate_not_empty {
+    my ($self, $field) = @_;
+
+    $self->add_result_error( $field, "cannot be empty" )
+      if defined $self->$field && $self->$field eq '';
 }
 
 1;
