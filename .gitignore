@@ -8,3 +8,5 @@ Build
 MYMETA.yml
 _build/
 DBIx-Class-Result-Validation-*
+*.swo
+*.swp
