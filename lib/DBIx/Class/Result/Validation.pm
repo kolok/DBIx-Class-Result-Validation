@@ -7,7 +7,6 @@ use Carp;
 use Try::Tiny;
 use Scalar::Util 'blessed';
 use DBIx::Class::Result::Validation::VException;
-use Data::Dumper;
 
 =head1 NAME
 
@@ -113,16 +112,30 @@ sub validate {
   {
       if ($self->result_source->column_info($field)->{'validation'})
       {
-          if ( ref($self->result_source->column_info($field)->{'validation'}) eq 'ARRAY' && scalar(@{$self->result_source->column_info($field)->{'validation'}}) >0 ){
-              foreach my $validation (@{$self->result_source->column_info($field)->{'validation'}}){
-                  my $validation_function = "validate_" . $validation;
-                  $self->$validation_function($field);
-              }
+          my $validations;
+          #convert every sources of validation in array
+          if ( ref($self->result_source->column_info($field)->{'validation'}) ne 'ARRAY'){
+            push @{$validations},$self->result_source->column_info($field)->{'validation'};
           }
-          else
-          {
-              my $validation_function = "validate_" . $self->result_source->column_info($field)->{'validation'};
-              $self->$validation_function($field);
+          else{
+             $validations = $self->result_source->column_info($field)->{'validation'};
+          }
+          if ( scalar(@{$validations}) >0 ){
+              foreach my $validation (@{$validations}){
+                  my $validation_function = "validate_" . $validation;
+                  #Unvalid validation method cause a croak exception
+                  try{
+                     $self->$validation_function($field);
+                  }
+                  catch{
+                      croak(
+                              DBIx::Class::Result::Validation::VException->new(
+                                  object  => $self,
+                                  message => "Validation : $validation is not valid"
+                                  )
+                           );
+                  }
+              }
           }
       }
   }
@@ -275,7 +288,7 @@ validation of the enum field, should return a validation error if the field is s
 
 sub validate_enum {
     my ($self, $field) = @_;
-    $self->add_result_error( $field, $field ." must be set with one of the following value: " . Dumper($self->result_source->columns_info->{$field}->{extra}->{list}) )
+    $self->add_result_error( $field, $field ." must be set with one of the following value: " .join(", ", @{$self->result_source->columns_info->{$field}->{extra}->{list}}) )
     if( 
             (!defined ($self->$field) && !defined($self->result_source->columns_info->{$field}->{default_value})
             or  
@@ -306,8 +319,22 @@ validation of a field which can be null but can't be empty
 sub validate_not_empty {
     my ($self, $field) = @_;
 
-    $self->add_result_error( $field, "cannot be empty" )
+    $self->add_result_error( $field, "can not be empty" )
       if defined $self->$field && $self->$field eq '';
+}
+
+=head2 validate_not_null_or_not_zero
+
+validation of a field which can be null and not equal to 0
+this can be used for data_type integer
+
+=cut
+
+sub validate_not_null_or_not_zero {
+    my ($self, $field) = @_;
+
+    $self->add_result_error( $field, "can not be null or equal to 0" )
+      if !$self->$field;
 }
 
 1;
