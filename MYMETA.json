@@ -50,6 +50,5 @@
          "url" : "https://github.com/kolok/DBIx-Class-Result-Validation"
       }
    },
-   "version" : "0.13",
-   "x_serialization_backend" : "JSON::PP version 2.27203"
+   "version" : "0.13"
 }
