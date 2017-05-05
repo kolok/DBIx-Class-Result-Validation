@@ -114,7 +114,7 @@ subtest "Defined / Empty Validation" => sub {
     };
     isa_ok( $error, "DBIx::Class::Result::Validation::VException", "error returned is a DBIx::Class::Result::Validation::VException");
     ok( $error->object->result_errors, "error returned object with result_error");
-    ok (defined $error->object->result_errors->{name}, "name can not be empty");
+    ok (defined $error->object->result_errors->{name}, "only ascii characters are authorized");
     is $error->object->result_errors->{name}->[0], "only ascii characters are authorized", "correct message is set";
 
     $error="";
