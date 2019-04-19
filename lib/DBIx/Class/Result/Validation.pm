@@ -334,6 +334,7 @@ sub validate_defined {
       unless defined $self->$field;
 }
 
+
 =head2 validate_not_empty
 
 validation of a field which can be null but can't be empty
@@ -360,6 +361,24 @@ sub validate_not_null_or_not_zero {
     $self->add_result_error( $field, "can not be null or equal to 0" )
       if !$self->$field;
 }
+
+
+=head2 validate_prohibit_field_update
+
+The value of the field can not be updated
+    
+=cut
+
+sub validate_prohibit_field_update {
+    my ($self, $field) = @_;
+   
+    if (defined $self->$field && defined $self->id){
+        my $previous_field_id = $self->get_from_storage->$field;
+        $self->add_result_error( $field, "$field can not be updated from ".$previous_field_id." to ".$self->$field) if (defined $previous_field_id && $previous_field_id != $self->$field);
+    }
+}
+
+
 
 1;
 __END__
