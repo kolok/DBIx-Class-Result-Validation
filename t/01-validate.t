@@ -191,8 +191,6 @@ subtest "prohibit field update" => sub {
         $error = $_;
     };
     is $error, "", "No error set at Object creation";
-    print "id : ".$obj_ok->id."\n";
-
 
 
     $error="";
@@ -205,5 +203,15 @@ subtest "prohibit field update" => sub {
     isa_ok( $error, "DBIx::Class::Result::Validation::VException", "error returned is a DBIx::Class::Result::Validation::VException");
     ok( $error->object->result_errors, "error returned object with result_error");
     ok (defined $error->object->result_errors->{ref_id}, "ref_id can not be updated from 1 to 2");
+
+
+    try{
+        $obj_ok = $schema->resultset('Object')->find($obj_ok->id)->update({name => "prohib1", my_enum => "val1", my_enum_def => "val1", attribute => "attr1", info => "new info"});
+    }
+    catch{
+        $error = $_;
+    };
+    ok( $error->object->result_errors, "error returned object with result_error");
+    ok (defined $error->object->result_errors->{info}, "info can not be updated from undef to new info, even if info was undef");
 };
 

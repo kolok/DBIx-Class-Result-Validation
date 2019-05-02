@@ -90,6 +90,10 @@ This field is used to store all errors
 
 =cut
 
+
+#Numerical data_type LIST
+my @NUMERICAL_DATA_TYPE = ("tinyint", "integer", "int", "float");
+
 use base qw/ DBIx::Class Class::Accessor::Grouped /;
 __PACKAGE__->mk_group_accessors(simple => qw(result_errors));
 
@@ -373,8 +377,14 @@ sub validate_prohibit_field_update {
     my ($self, $field) = @_;
    
     if (defined $self->$field && defined $self->id){
-        my $previous_field_id = $self->get_from_storage->$field;
-        $self->add_result_error( $field, "$field can not be updated from ".$previous_field_id." to ".$self->$field) if (defined $previous_field_id && $previous_field_id != $self->$field);
+        my $previous_field_value = $self->get_from_storage->$field;
+        $self->add_result_error( $field, "$field has no data_type defined, it must be defined when prohibit_field_update is used") if (!defined $self->result_source->columns_info->{$field}->{data_type});
+        if ( $self->result_source->columns_info->{$field}->{data_type} ~~ @NUMERICAL_DATA_TYPE){
+            $self->add_result_error( $field, "$field can not be updated to ".$self->$field ." : Not authorized") if (!defined $previous_field_value || $previous_field_value != $self->$field);
+        }
+        else{
+            $self->add_result_error( $field, "$field can not be updated to ".$self->$field." : Not authorized") if (!defined $previous_field_value || $previous_field_value ne $self->$field);
+        }
     }
 }
 
